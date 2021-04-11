@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.newdesign">
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/project_icon"
+        android:label="ListSelection"
+        android:roundIcon="@drawable/project_icon"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.NewDesign">
+        <activity android:name=".ListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
