@@ -89,7 +89,7 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
         public OuterListContainer(View view) {
             super(view);
             listItemLayout = view.findViewById(R.id.list_item_layout);
-            listItemData = view.findViewById(R.id.list_item_data);
+            listItemData = view.findViewById(R.id.inner_list_item);
             innerList = view.findViewById(R.id.cityList);
             listItemTitle = (TextView) view.findViewById(R.id.list_item_title);
         }
@@ -128,7 +128,7 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
     }
 
     public  ArrayAdapter<String> GetCitiesAdaptor(String title) {
-        ArrayAdapter<String> citiesyAdaptor = new ArrayAdapter<>(context, R.layout.wheel_list_item);
+        ArrayAdapter<String> citiesyAdaptor = new ArrayAdapter<>(context, R.layout.inner_list_item);
         String[] cities= Cities.GetFilteredList(title);
         for (int i = 0; i < cities.length-1; i++) {
             citiesyAdaptor.add(String.format(cities[i]));
