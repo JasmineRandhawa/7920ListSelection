@@ -1,4 +1,4 @@
-package com.example.newdesign;
+package com.example.ListSelection;
 
 public class Cities {
     public static String[] GetListData()

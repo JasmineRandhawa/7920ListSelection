@@ -29,7 +29,7 @@
         android:animateLayoutChanges="true"
         android:background="@android:color/transparent">
 
-        <com.example.newdesign.InnerList
+        <com.example.ListSelection.InnerList
             android:id="@+id/cityList"
             android:layout_width="290dp"
             android:layout_height="350dp"

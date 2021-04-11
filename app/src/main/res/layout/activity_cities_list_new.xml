@@ -41,7 +41,7 @@
         android:layout_marginLeft="40dp"
         android:background="@color/LightSlateGray">
 
-        <com.example.newdesign.CitiesListView
+        <com.example.ListSelection.CitiesListView
             android:id="@+id/dictionary"
             android:layout_width="290dp"
             android:layout_height="800dp"
