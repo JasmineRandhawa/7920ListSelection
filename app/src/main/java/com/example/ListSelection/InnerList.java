@@ -14,17 +14,16 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
-/* Inner List View  for cities list*/
+/* Inner List View  for filtered cities list*/
 public class InnerList extends ListView implements AbsListView.OnScrollListener {
 
+    private final int innerListScrollDuration = 50;
     //class fields
     private int innerListItemHeight = 0;
     private InnerListListener innerListListener;
-    private InnerListAdaptor innerListAdaptor;
+    private InnerListAdapter innerListAdapter;
     private boolean isInfiniteScrollingEnabled = true;
-    private double innerListRadius = 0;
-    private final int innerListScrollDuration = 50;
+    private InnerList.InnerListListener.ItemAllignment innerListAlignment = InnerList.InnerListListener.ItemAllignment.Left;
 
     //constructor
     public InnerList(Context context) {
@@ -43,32 +42,75 @@ public class InnerList extends ListView implements AbsListView.OnScrollListener 
     }
 
     //get set methods
-
     public int getInnerListItemHeight() {
-        return (innerListItemHeight ==0 ? ((getChildAt(0) != null)?(getChildAt(0)).getHeight():innerListItemHeight)
-                :innerListItemHeight);
+        return (innerListItemHeight == 0 ? ((getChildAt(0) != null) ? (getChildAt(0)).getHeight() : innerListItemHeight)
+                : innerListItemHeight);
     }
 
-    public void setInnerListAdaptor(ListAdapter listAdapter) {
-        innerListAdaptor = new InnerListAdaptor(listAdapter);
-        innerListAdaptor.enableInfiniteScroll(isInfiniteScrollingEnabled);
-        super.setAdapter(innerListAdaptor);
+    public int getCenter() {
+        for (int i = 0; i < getChildCount(); i++)
+            if (getChildAt(i) != null && getChildAt(i).getTop() <= getHeight() / 2
+                    && getChildAt(i).getTop() + getChildAt(i).getHeight() >= getHeight() / 2)
+                return getFirstVisiblePosition() + i;
+        return -1;
+    }
+
+    public View getCenterItem() {
+        if (getCenter() != -1)
+            return getChildAt(getCenter() - getFirstVisiblePosition() - 1);
+        return null;
+    }
+
+    public void setInnerListAdapter(ListAdapter listAdapter) {
+        innerListAdapter = new InnerListAdapter(listAdapter);
+        innerListAdapter.enableInfiniteScroll(isInfiniteScrollingEnabled);
+        super.setAdapter(innerListAdapter);
     }
 
     public void setInnerListListener(InnerListListener listViewListener) {
         this.innerListListener = listViewListener;
     }
 
+    public void setInnerListAlignment(InnerList.InnerListListener.ItemAllignment listAlignment) {
+        if (innerListAlignment != listAlignment) {
+            innerListAlignment = listAlignment;
+            requestLayout();
+        }
+    }
+
     public void setInfiniteScroll(boolean enableInfiniteScroll) {
         isInfiniteScrollingEnabled = enableInfiniteScroll;
-        if (innerListAdaptor != null) {
-            innerListAdaptor.enableInfiniteScroll(enableInfiniteScroll);
-        }
+        if (innerListAdapter != null)
+            innerListAdapter.enableInfiniteScroll(enableInfiniteScroll);
         if (isInfiniteScrollingEnabled) {
             setVerticalScrollBarEnabled(false);
             setHorizontalScrollBarEnabled(false);
         }
     }
+
+    public void scrollFirstItemToCenter() {
+        if (!isInfiniteScrollingEnabled)
+            return;
+        int topHeight = 0;
+        if (getInnerListItemHeight() > 0)
+            topHeight = getHeight() / 2 - getInnerListItemHeight() / 2;
+        if (innerListAdapter.getItemCount() > 0)
+            setSelectionFromTop(innerListAdapter.getItemCount(), topHeight);
+    }
+
+    public void scrollSelectedItemToCenter(int index) {
+        if (!isInfiniteScrollingEnabled || innerListAdapter.getItemCount() == 0)
+            return;
+        index = index % innerListAdapter.getItemCount();
+        int topHeight = 0;
+        if (getCenter() % innerListAdapter.getItemCount() == index && getCenterItem() != null)
+            topHeight = getCenterItem().getTop();
+        if (getInnerListItemHeight() > 0)
+            topHeight = getHeight() / 2 - getInnerListItemHeight() / 2;
+        setSelectionFromTop(index + innerListAdapter.getItemCount(), topHeight);
+    }
+
+    //events
     @TargetApi(Build.VERSION_CODES.FROYO)
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -76,198 +118,159 @@ public class InnerList extends ListView implements AbsListView.OnScrollListener 
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
                 switch (event.getKeyCode()) {
                     case KeyEvent.KEYCODE_DPAD_DOWN:
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-                            smoothScrollBy(-innerListItemHeight, innerListScrollDuration);
-                            return true;
-                        }
-                        break;
+                        smoothScrollBy(-innerListItemHeight, innerListScrollDuration);
+                        return true;
                     case KeyEvent.KEYCODE_DPAD_UP:
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-                            smoothScrollBy(innerListItemHeight, innerListScrollDuration);
-                            return true;
-                        }
-                        break;
+                        smoothScrollBy(innerListItemHeight, innerListScrollDuration);
+                        return true;
                 }
             }
         }
         return super.dispatchKeyEvent(event);
     }
 
-    public int getCenter() {
-        for (int i = 0; i < getChildCount(); i++) {
-            if (getChildAt(i) != null && getChildAt(i).getTop() <=  getHeight() / 2.0f
-                    && getChildAt(i).getTop() + getChildAt(i).getHeight() >=  getHeight() / 2.0f) {
-                    return getFirstVisiblePosition() + i;
-            }
-        }
-        return -1;
-    }
-
-    public View getCenterItem() {
-        if (getCenter() != -1) {
-            return getChildAt(getCenter() - getFirstVisiblePosition() );
-        }
-        return null;
-    }
-
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-        if (!isInTouchMode() && scrollState == SCROLL_STATE_IDLE) {
+        if (!isInTouchMode() && scrollState == SCROLL_STATE_IDLE)
             scrollSelectedItemToCenter(getCenter());
-        }
     }
 
     @Override
-    public void onScroll(AbsListView innerList, int firstItem, int itemDisplayed,int totalItems) {
-        if (!isInfiniteScrollingEnabled || this.getChildAt(0) == null || innerListAdaptor.getItemCount() == 0)
+    public void onScroll(AbsListView innerList, int firstItem, int itemDisplayed, int totalItems) {
+        if (!isInfiniteScrollingEnabled || this.getChildAt(0) == null || innerListAdapter.getItemCount() == 0)
             return;
 
         if (innerListItemHeight == 0)
             innerListItemHeight = this.getChildAt(0).getHeight();
 
         if (firstItem == 0)
-            this.setSelectionFromTop(innerListAdaptor.getItemCount(), this.getChildAt(0).getTop());
+            this.setSelectionFromTop(innerListAdapter.getItemCount(), this.getChildAt(0).getTop());
 
+        if (totalItems == firstItem + itemDisplayed)
+            this.setSelectionFromTop(firstItem - innerListAdapter.getItemCount(), this.getChildAt(0).getTop());
 
-            if (totalItems == firstItem + itemDisplayed)
-                this.setSelectionFromTop(firstItem - innerListAdaptor.getItemCount(),
-                        this.getChildAt(0).getTop());
+        if (innerListListener != null)
+            innerListListener.onScrollEnd(this, firstItem, itemDisplayed, totalItems);
 
-            if (innerListListener != null) {
-                innerListListener.onScrollEnd(this, firstItem, itemDisplayed, totalItems);
-            }
-
-            double viewHalfHeight = innerList.getHeight() / 2.0f;
-            double yRadius = (innerList.getHeight() + innerListItemHeight) / 2.0f;
-            double xRadius = ( innerList.getHeight() < innerList.getWidth()) ? innerList.getHeight() : innerList.getWidth();
+        if (innerListAlignment != InnerList.InnerListListener.ItemAllignment.Center) {
+            double vRad = (innerList.getHeight() + innerListItemHeight) / 2;
+            double hRad = (innerList.getHeight() < innerList.getWidth()) ? innerList.getHeight() : innerList.getWidth();
 
             for (int i = 0; i < itemDisplayed; i++) {
-                View itemView = this.getChildAt(i);
-                if (itemView != null) {
-                    double y = Math.abs(viewHalfHeight - (itemView.getTop() + (itemView.getHeight() / 2.0f)));
-                    y = Math.min(y, yRadius);
-                    double x = (xRadius * Math.cos(Math.asin(y / yRadius)))-xRadius;
-                        View temp = itemView;
-                        itemView.post(new Runnable() {
-                            @Override public void run() {
-                                temp.setLayoutParams(new LayoutParams(200, temp.getHeight()));
-                                ((TextView)temp).setTextSize(TypedValue.COMPLEX_UNIT_PX,32);
-                            }
-                        });
-                        itemView.setX((int)(itemView.getWidth()-x));
-                        itemView.scrollTo((int) (int)(itemView.getWidth()-x)/70, -(int)(itemView.getWidth()-x)/70);
-                        itemView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
-                        itemView.setBackgroundResource(R.drawable.inner_list_item_design);
+                if (this.getChildAt(i) != null) {
+                    double y = Math.min(Math.abs(innerList.getHeight() / 2 - (this.getChildAt(i).getTop() + (this.getChildAt(i).getHeight() / 2))), vRad);
+                    double x = (hRad * Math.cos(Math.asin(y / vRad))) - hRad;
+                    View temp = this.getChildAt(i);
+                    this.getChildAt(i).post(() -> {
+                        temp.setLayoutParams(new LayoutParams(200, temp.getHeight()));
+                        ((TextView) temp).setTextSize(TypedValue.COMPLEX_UNIT_PX, 32);
+                    });
+                    this.getChildAt(i).setX((int) (this.getChildAt(i).getWidth() - x));
+                    this.getChildAt(i).scrollTo((int) (int) (this.getChildAt(i).getWidth() - x) / 70, -(int) (this.getChildAt(i).getWidth() - x) / 70);
+                    this.getChildAt(i).setTextAlignment(TEXT_ALIGNMENT_CENTER);
+                    this.getChildAt(i).setBackgroundResource(R.drawable.inner_list_item_design);
                 }
             }
-    }
-
-    public void scrollFirstItemToCenter() {
-        if (!isInfiniteScrollingEnabled)
-            return;
-        else {
-            int topHeight = 0;
-            if (getInnerListItemHeight() > 0) {
-                topHeight = getHeight() / 2 - getInnerListItemHeight() / 2;
-            }
-            if (innerListAdaptor.getItemCount() > 0) {
-                setSelectionFromTop(innerListAdaptor.getItemCount(), topHeight);
+        } else {
+            for (int i = 0; i < itemDisplayed; i++) {
+                if (this.getChildAt(i) != null) {
+                    this.getChildAt(i).scrollTo(0, 0);
+                    this.getChildAt(i).setX(1.5f);
+                    this.getChildAt(i).setTextAlignment(TEXT_ALIGNMENT_CENTER);
+                    this.getChildAt(i).setBackgroundResource(R.drawable.inner_list_selected_item_shape);
+                    ((TextView) this.getChildAt(i)).setTextColor(getResources().getColor(R.color.Red));
+                }
             }
         }
     }
 
-    public void scrollSelectedItemToCenter(int index) {
-        if (!isInfiniteScrollingEnabled || innerListAdaptor.getItemCount()==0) {
-            return;
-        }
-        index = index % innerListAdaptor.getItemCount();
+    //listerner
+    interface InnerListListener {
+        void onScrollEnd(InnerList innerList, int firstItem, int displayedItems, int totalItems);
 
-        int topHeight =0;
-        if (getCenter() % innerListAdaptor.getItemCount() == index && getCenterItem()!=null) {
-            topHeight =  getCenterItem().getTop();
-        }
-        if ( getInnerListItemHeight() > 0) {
-            topHeight = getHeight() / 2 -  getInnerListItemHeight()  / 2;}
-
-        setSelectionFromTop(index + innerListAdaptor.getItemCount(), topHeight);
+        enum ItemAllignment {Center, Left}
     }
 
-    class InnerListAdaptor implements ListAdapter {
+    //Adapter
+    class InnerListAdapter implements ListAdapter {
+        private final ListAdapter innerlListAdapter;
         private boolean infiniteScrolling = true;
-        private ListAdapter innerListAdapter;
-        public InnerListAdaptor(ListAdapter listAdapter) {
-            innerListAdapter = listAdapter;
+
+        public InnerListAdapter(ListAdapter listAdapter) {
+            innerlListAdapter = listAdapter;
         }
+
         private void enableInfiniteScroll(boolean infiniteScroll) {
             infiniteScrolling = infiniteScroll;
         }
+
         public int getItemCount() {
-            return innerListAdapter.getCount();
+            return innerlListAdapter.getCount();
         }
+
         public int goToIndex(int position) {
-            int count = innerListAdapter.getCount();
-            return (count == 0) ? 0 : position % count;
+            return (innerlListAdapter.getCount() == 0) ? 0 : position % innerlListAdapter.getCount();
         }
 
         @Override
         public void registerDataSetObserver(DataSetObserver observer) {
-            innerListAdapter.registerDataSetObserver(observer);
+            innerlListAdapter.registerDataSetObserver(observer);
         }
 
         @Override
         public void unregisterDataSetObserver(DataSetObserver observer) {
-            innerListAdapter.unregisterDataSetObserver(observer);
+            innerlListAdapter.unregisterDataSetObserver(observer);
         }
 
         @Override
         public int getCount() {
-            return (infiniteScrolling) ? innerListAdapter.getCount() * 10 : innerListAdapter.getCount();
+            return (infiniteScrolling) ? innerlListAdapter.getCount() * 10 : innerlListAdapter.getCount();
         }
 
         @Override
         public Object getItem(int index) {
-            return innerListAdapter.getItem(this.goToIndex(index));
+            return innerlListAdapter.getItem(this.goToIndex(index));
         }
 
         @Override
         public long getItemId(int index) {
-            return innerListAdapter.getItemId(this.goToIndex(index));
+            return innerlListAdapter.getItemId(this.goToIndex(index));
         }
 
         @Override
         public boolean hasStableIds() {
-            return innerListAdapter.hasStableIds();
+            return innerlListAdapter.hasStableIds();
         }
 
         @Override
         public View getView(int index, View convertView, ViewGroup parent) {
-            return innerListAdapter.getView(this.goToIndex(index), convertView, parent);
+            return innerlListAdapter.getView(this.goToIndex(index), convertView, parent);
         }
 
         @Override
         public int getItemViewType(int index) {
-            return innerListAdapter.getItemViewType(this.goToIndex(index));
+            return innerlListAdapter.getItemViewType(this.goToIndex(index));
         }
 
         @Override
         public int getViewTypeCount() {
-            return innerListAdapter.getViewTypeCount();
+            return innerlListAdapter.getViewTypeCount();
         }
-
 
         @Override
         public boolean isEmpty() {
-            return innerListAdapter.isEmpty();
+            return innerlListAdapter.isEmpty();
         }
 
         @Override
         public boolean areAllItemsEnabled() {
-            return innerListAdapter.areAllItemsEnabled();
+            return innerlListAdapter.areAllItemsEnabled();
         }
 
         @Override
         public boolean isEnabled(int index) {
-            return innerListAdapter.isEnabled(this.goToIndex(index));
+            return innerlListAdapter.isEnabled(this.goToIndex(index));
         }
     }
 }
+

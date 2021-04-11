@@ -1,9 +1,9 @@
 package com.example.ListSelection;
 
 import android.content.Context;
+import android.database.Observable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.database.Observable;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +15,19 @@ import java.util.List;
 
 public class CitiesListView extends ViewGroup {
 
+    //class fields
     private final int[] mScrollOffset = new int[2];
-    private int mScrollY;
-    private int mScrollX;
-    private int mTotalLength;
-    private int mOverlapGaps=80;
-    private int mNumBottomShow=3;
-    private OuterListAdaptor outerListAdaptor;
-    private int selectedIndex = -1;
-    private int mShowHeight;
     private final ViewDataObserver mObserver = new ViewDataObserver();
     private final List<ListItemView> listItemViews;
     private final OverScroller mScroller;
+    private int mScrollY;
+    private int mScrollX;
+    private int mTotalLength;
+    private final int mOverlapGaps = 80;
+    private final int mNumBottomShow = 3;
+    private OuterListAdaptor outerListAdaptor;
+    private int selectedIndex = -1;
+    private int mShowHeight;
     private int mLastMotionY;
     private boolean mIsBeingDragged = false;
     private VelocityTracker mVelocityTracker;
@@ -34,6 +35,7 @@ public class CitiesListView extends ViewGroup {
     private boolean mScrollEnable = true;
     private int mNestedYOffset;
 
+    //constructor
     public CitiesListView(Context context) {
         this(context, null);
     }
@@ -48,6 +50,17 @@ public class CitiesListView extends ViewGroup {
         mScroller = new OverScroller(getContext());
     }
 
+    private static int clamp(int n, int my, int child) {
+        if (my >= child || n < 0) {
+            return 0;
+        }
+        if ((my + n) > child) {
+            return child - my;
+        }
+        return n;
+    }
+
+    //get set methods
     public int getOverlapGaps() {
         return mOverlapGaps;
     }
@@ -63,9 +76,11 @@ public class CitiesListView extends ViewGroup {
     public int getSelectedIndex() {
         return selectedIndex;
     }
+
     public void setSelectedIndex(int pos) {
         selectedIndex = pos;
     }
+
     public void setScrollEnable(boolean scrollEnable) {
         mScrollEnable = scrollEnable;
     }
@@ -94,7 +109,6 @@ public class CitiesListView extends ViewGroup {
         scrollViewTo(x, mScrollY);
     }
 
-
     public void setAdapter(OuterListAdaptor listAdaptor) {
         outerListAdaptor = listAdaptor;
         outerListAdaptor.registerObserver(mObserver);
@@ -104,6 +118,22 @@ public class CitiesListView extends ViewGroup {
         }
         setViewScrollY(0);
         requestLayout();
+    }
+
+    private void setClickAnimator(final ListItemView listItemView, final int position) {
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedIndex == -1) return;
+                performItemClick(listItemViews.get(getSelectedIndex()));
+            }
+        });
+        listItemView.itemView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performItemClick(listItemView);
+            }
+        });
     }
 
     public void updateSelectPosition(final int selectPosition) {
@@ -117,7 +147,6 @@ public class CitiesListView extends ViewGroup {
         });
     }
 
-
     ListItemView getListContainer(int i) {
         if (i == -1) return null;
         ListItemView listItemView;
@@ -130,17 +159,116 @@ public class CitiesListView extends ViewGroup {
         return listItemView;
     }
 
-
-    private static int clamp(int n, int my, int child) {
-        if (my >= child || n < 0) {
-            return 0;
+    private int getScrollRange() {
+        int scrollRange = 0;
+        if (getChildCount() > 0) {
+            scrollRange = Math.max(0,
+                    mTotalLength - mShowHeight);
         }
-        if ((my + n) > child) {
-            return child - my;
-        }
-        return n;
+        return scrollRange;
     }
 
+    //helper methods
+    public void scrollViewTo(int x, int y) {
+        x = clamp(x, this.getWidth() - this.getPaddingRight() - this.getPaddingLeft(), this.getWidth());
+        y = clamp(y, this.getShowHeight(), this.getTotalLength());
+        mScrollY = y;
+        mScrollX = x;
+        for (int i = 0; i < this.getChildCount(); i++) {
+            View view = this.getChildAt(i);
+            if (view.getTop() - mScrollY < this.getChildAt(0).getY()) {
+                view.setTranslationY(this.getChildAt(0).getY() - view.getTop());
+            } else if (view.getTop() - mScrollY > view.getTop()) {
+                view.setTranslationY(0);
+            } else {
+                view.setTranslationY(-mScrollY);
+            }
+        }
+    }
+
+    private void refreshView() {
+        removeAllViews();
+        listItemViews.clear();
+        for (int i = 0; i < outerListAdaptor.getItemCount(); i++) {
+            ListItemView holder = getListContainer(i);
+            holder.position = i;
+            holder.onOuterItemExpansion(i == selectedIndex);
+            addView(holder.itemView);
+            setClickAnimator(holder, i);
+            outerListAdaptor.bindItemContainer(holder, i);
+        }
+        requestLayout();
+    }
+
+    @Override
+    protected int computeVerticalScrollRange() {
+        final int count = getChildCount();
+        final int contentHeight = mShowHeight;
+        if (count == 0) {
+            return contentHeight;
+        }
+
+        int scrollRange = mTotalLength;
+        final int scrollY = getViewScrollY();
+        final int overscrollBottom = Math.max(0, scrollRange - contentHeight);
+        if (scrollY < 0) {
+            scrollRange -= scrollY;
+        } else if (scrollY > overscrollBottom) {
+            scrollRange += scrollY - overscrollBottom;
+        }
+
+        return scrollRange;
+    }
+
+
+    @Override
+    protected int computeVerticalScrollOffset() {
+        return Math.max(0, super.computeVerticalScrollOffset());
+    }
+
+    @Override
+    public void computeScroll() {
+        if (mScroller.computeScrollOffset()) {
+            scrollViewTo(0, mScroller.getCurrY());
+            postInvalidate();
+        }
+    }
+
+    public void fling(int velocityY) {
+        if (getChildCount() > 0) {
+            int height = mShowHeight;
+            int bottom = mTotalLength;
+            mScroller.fling(getViewScrollX(), getViewScrollY(), 0, velocityY, 0, 0, 0,
+                    Math.max(0, bottom - height), 0, 0);
+            postInvalidate();
+        }
+    }
+
+    @Override
+    public void scrollTo(int x, int y) {
+        if (getChildCount() > 0) {
+            x = clamp(x, getWidth() - getPaddingRight() - getPaddingLeft(), getWidth());
+            y = clamp(y, mShowHeight, mTotalLength);
+            if (x != getViewScrollX() || y != getViewScrollY()) {
+                super.scrollTo(x, y);
+            }
+        }
+    }
+
+    private void endDrag() {
+        mIsBeingDragged = false;
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
+    }
+
+    @Override
+    protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
+        return p instanceof LayoutParams;
+    }
+
+    //events
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -196,56 +324,6 @@ public class CitiesListView extends ViewGroup {
         }
     }
 
-    public void scrollViewTo(int x, int y) {
-        x = clamp(x, this.getWidth() - this.getPaddingRight() - this.getPaddingLeft(), this.getWidth());
-        y = clamp(y, this.getShowHeight(), this.getTotalLength());
-        mScrollY = y;
-        mScrollX = x;
-        for (int i = 0; i < this.getChildCount(); i++) {
-            View view = this.getChildAt(i);
-            if (view.getTop() - mScrollY < this.getChildAt(0).getY()) {
-                view.setTranslationY(this.getChildAt(0).getY() - view.getTop());
-            } else if (view.getTop() - mScrollY > view.getTop()) {
-                view.setTranslationY(0);
-            } else {
-                view.setTranslationY(-mScrollY);
-            }
-        }
-    }
-
-
-
-    private void refreshView() {
-        removeAllViews();
-        listItemViews.clear();
-        for (int i = 0; i < outerListAdaptor.getItemCount(); i++) {
-            ListItemView holder = getListContainer(i);
-            holder.position = i;
-            holder.onOuterItemExpansion(i == selectedIndex);
-            addView(holder.itemView);
-            setClickAnimator(holder, i);
-            outerListAdaptor.bindItemContainer(holder, i);
-        }
-        requestLayout();
-    }
-
-
-
-    private void setClickAnimator(final ListItemView listItemView, final int position) {
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selectedIndex == -1) return;
-                performItemClick(listItemViews.get(getSelectedIndex()));
-            }
-        });
-        listItemView.itemView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                performItemClick(listItemView);
-            }
-        });
-    }
     public void performItemClick(ListItemView listItemView) {
         View parentView = (View) getParent();
         mShowHeight = parentView.getMeasuredHeight() - parentView.getPaddingTop() - parentView.getPaddingBottom();
@@ -448,35 +526,6 @@ public class CitiesListView extends ViewGroup {
         }
     }
 
-    private int getScrollRange() {
-        int scrollRange = 0;
-        if (getChildCount() > 0) {
-            scrollRange = Math.max(0,
-                    mTotalLength - mShowHeight);
-        }
-        return scrollRange;
-    }
-
-    @Override
-    protected int computeVerticalScrollRange() {
-        final int count = getChildCount();
-        final int contentHeight = mShowHeight;
-        if (count == 0) {
-            return contentHeight;
-        }
-
-        int scrollRange = mTotalLength;
-        final int scrollY = getViewScrollY();
-        final int overscrollBottom = Math.max(0, scrollRange - contentHeight);
-        if (scrollY < 0) {
-            scrollRange -= scrollY;
-        } else if (scrollY > overscrollBottom) {
-            scrollRange += scrollY - overscrollBottom;
-        }
-
-        return scrollRange;
-    }
-
     @Override
     protected void onOverScrolled(int scrollX, int scrollY,
                                   boolean clampedX, boolean clampedY) {
@@ -495,49 +544,6 @@ public class CitiesListView extends ViewGroup {
     }
 
     @Override
-    protected int computeVerticalScrollOffset() {
-        return Math.max(0, super.computeVerticalScrollOffset());
-    }
-
-    @Override
-    public void computeScroll() {
-        if (mScroller.computeScrollOffset()) {
-            scrollViewTo(0, mScroller.getCurrY());
-            postInvalidate();
-        }
-    }
-
-    public void fling(int velocityY) {
-        if (getChildCount() > 0) {
-            int height = mShowHeight;
-            int bottom = mTotalLength;
-            mScroller.fling(getViewScrollX(), getViewScrollY(), 0, velocityY, 0, 0, 0,
-                    Math.max(0, bottom - height), 0, 0);
-            postInvalidate();
-        }
-    }
-
-    @Override
-    public void scrollTo(int x, int y) {
-        if (getChildCount() > 0) {
-            x = clamp(x, getWidth() - getPaddingRight() - getPaddingLeft(), getWidth());
-            y = clamp(y, mShowHeight, mTotalLength);
-            if (x != getViewScrollX() || y != getViewScrollY()) {
-                super.scrollTo(x, y);
-            }
-        }
-    }
-
-
-    private void endDrag() {
-        mIsBeingDragged = false;
-        if (mVelocityTracker != null) {
-            mVelocityTracker.recycle();
-            mVelocityTracker = null;
-        }
-    }
-
-    @Override
     public ViewGroup.LayoutParams generateLayoutParams(AttributeSet attrs) {
         return new LayoutParams(getContext(), attrs);
     }
@@ -552,14 +558,8 @@ public class CitiesListView extends ViewGroup {
         return new LayoutParams(p);
     }
 
-    @Override
-    protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
-        return p instanceof LayoutParams;
-    }
-
-
+    // classes
     public static class LayoutParams extends MarginLayoutParams {
-
         public int mHeaderHeight = 240;
 
         public LayoutParams(Context c, AttributeSet attrs) {
@@ -567,7 +567,7 @@ public class CitiesListView extends ViewGroup {
         }
 
         public LayoutParams(int width, int height) {
-            super(width , height );
+            super(width, height);
         }
 
         public LayoutParams(ViewGroup.LayoutParams source) {
@@ -577,6 +577,7 @@ public class CitiesListView extends ViewGroup {
 
     public static abstract class Adapter<VH extends ListItemView> {
         private final AdapterDataObservable mObservable = new AdapterDataObservable();
+
         ListItemView createView(ViewGroup parent, int viewType) {
             ListItemView listItemView = onCreateView(parent, viewType);
             listItemView.itemViewType = viewType;
@@ -585,18 +586,11 @@ public class CitiesListView extends ViewGroup {
 
         public abstract VH onCreateView(ViewGroup parent, int viewType);
 
-
         public void bindItemContainer(ListItemView container, int index) {
             onBindItemContainer(container, index);
         }
 
         public abstract void onBindItemContainer(ListItemView container, int position);
-
-        public abstract int getItemCount();
-
-        public int getItemViewType(int position) {
-            return 0;
-        }
 
         public final void notifyDataSetChanged() {
             mObservable.notifyChanged();
@@ -628,7 +622,6 @@ public class CitiesListView extends ViewGroup {
         }
     }
 
-
     public static class AdapterDataObservable extends Observable<AdapterDataObserver> {
         public boolean hasObservers() {
             return !mObservers.isEmpty();
@@ -652,5 +645,4 @@ public class CitiesListView extends ViewGroup {
             refreshView();
         }
     }
-
 }

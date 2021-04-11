@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -22,16 +21,18 @@ import java.util.List;
 
 public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesListView.ListItemView> {
 
+    // class fields
     private final Context context;
     private final LayoutInflater layoutInflater;
-    private List<Integer> outerListData;
-    private CitiesListView citiesListView;
-    private AnimatorSet animatorSet;
+    private final List<Integer> outerListData;
+    private final CitiesListView citiesListView;
+    private final int mDuration = 400;
     InnerList innerList;
-    private int mDuration=400;
-    String selectedCity="";
+    String selectedCity = "";
     TextView selectedCityTextView;
+    private AnimatorSet animatorSet;
 
+    //constructor
     public OuterListAdaptor(Context ctx, CitiesListView dictionary, TextView view) {
         this.context = ctx;
         this.layoutInflater = LayoutInflater.from(context);
@@ -40,22 +41,17 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
         selectedCityTextView = view;
     }
 
+    public CitiesListView.ListItemView onCreateView(ViewGroup parent, int viewType) {
+        return new OuterListContainer(getLayoutInflater().inflate(R.layout.outer_list_item, parent, false));
+    }
+
+    //get set methods
     public void setOuterListData(List<Integer> outerListItemData) {
         this.outerListData.clear();
         if (outerListItemData != null) {
             this.outerListData.addAll(outerListItemData);
         }
         this.notifyDataSetChanged();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void bindView(Integer outerListItemData, int pos, CitiesListView.ListItemView container) {
-        OuterListContainer olc = (OuterListContainer) container;
-        olc.onBind(outerListItemData, pos);
-    }
-
-    public CitiesListView.ListItemView onCreateView(ViewGroup parent, int viewType) { ;
-        return new OuterListContainer(getLayoutInflater().inflate(R.layout.outer_list_item, parent, false));
     }
 
     public int getItemViewType(int position) {
@@ -66,12 +62,6 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
         return this.layoutInflater;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void onBindItemContainer(CitiesListView.ListItemView holder, int position) {
-        Integer data = this.getItem(position);
-        bindView( data, position, holder);
-    }
-
     public Integer getItem(int index) {
         return this.outerListData.get(index);
     }
@@ -80,33 +70,29 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
         return outerListData.size();
     }
 
-    public  class OuterListContainer extends CitiesListView.ListItemView {
-        View listItemLayout;
-        View listItemData;
+    protected int getBottomItemCount(int collapseShowItemCount) {
+        return citiesListView.getOverlapGapsCollapse()
+                * (citiesListView.getNumBottomShow() - collapseShowItemCount - (citiesListView.getNumBottomShow() -
+                (citiesListView.getChildCount() - citiesListView.getSelectedIndex() > citiesListView.getNumBottomShow()
+                        ? citiesListView.getNumBottomShow()
+                        : citiesListView.getChildCount() - citiesListView.getSelectedIndex() - 1)));
+    }
 
-        TextView listItemTitle;
+    public int getDuration() {
+        return 200;
+    }
 
-        public OuterListContainer(View view) {
-            super(view);
-            listItemLayout = view.findViewById(R.id.list_item_layout);
-            listItemData = view.findViewById(R.id.inner_list_item);
-            innerList = view.findViewById(R.id.cityList);
-            listItemTitle = (TextView) view.findViewById(R.id.list_item_title);
-        }
+    //helper methods
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void bindView(Integer outerListItemData, int pos, CitiesListView.ListItemView container) {
+        OuterListContainer olc = (OuterListContainer) container;
+        olc.onBind(outerListItemData, pos);
+    }
 
-        @Override
-        public void onOuterItemExpansion(boolean isExpand) {
-            listItemData.setVisibility(isExpand ? View.VISIBLE : View.GONE);
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        public void onBind(Integer data, int position) {
-            listItemLayout.getBackground().setColorFilter(ContextCompat.getColor(getContext(), (java.lang.Integer) data), PorterDuff.Mode.SRC_IN);
-            String title = OuterList.GetData()[position];
-            listItemTitle.setText(title);
-            SetUpInnerList(title);
-            refreshCircular(innerList);
-        }
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void onBindItemContainer(CitiesListView.ListItemView holder, int position) {
+        Integer data = this.getItem(position);
+        bindView(data, position, holder);
     }
 
     void refreshCircular(InnerList list) {
@@ -119,43 +105,25 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
             }
         }
         if (listSelectedItem != null) {
-            listSelectedItem.setBackgroundResource(R.drawable.inner_list_selected_item_design);
+            listSelectedItem.setBackgroundResource(R.drawable.inner_list_selected_item_shape);
             listSelectedItem.setTextColor(context.getResources().getColor(R.color.Red));
             selectedCity = (String) listSelectedItem.getText();
-            if(selectedCityTextView!=null)
+            if (selectedCityTextView != null)
                 selectedCityTextView.setText(selectedCity);
         }
-    }
-
-    public  ArrayAdapter<String> GetCitiesAdaptor(String title) {
-        ArrayAdapter<String> citiesyAdaptor = new ArrayAdapter<>(context, R.layout.inner_list_item);
-        String[] cities= Cities.GetFilteredList(title);
-        for (int i = 0; i < cities.length-1; i++) {
-            citiesyAdaptor.add(String.format(cities[i]));
-        }
-        return citiesyAdaptor;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void SetUpInnerList(String title) {
         innerList.setX(-200);
         innerList.setY(+110);
-        innerList.setInnerListAdaptor(GetCitiesAdaptor(title));
+        innerList.setInnerListAdapter(Cities.GetListAdaptor(context, title));
         innerList.scrollFirstItemToCenter();
-        innerList.setInnerListListener(new InnerListListener() {
-            @Override
-            public void onScrollEnd(InnerList filteredCitiesList, int firstItem, int displayedItems, int totalItems) {
-                refreshCircular(filteredCitiesList);
-            }
-        });
+        innerList.setInnerListAlignment(InnerList.InnerListListener.ItemAllignment.Left);
+        innerList.setInnerListListener((filteredCitiesList, firstItem, displayedItems, totalItems)
+                -> refreshCircular(filteredCitiesList));
         innerList.scrollFirstItemToCenter();
         innerList.scrollSelectedItemToCenter(0);
-    }
-
-    protected void initAnimatorSet() {
-        animatorSet = new AnimatorSet();
-        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
-        animatorSet.setDuration(getDuration());
     }
 
     public void itemClick(final CitiesListView.ListItemView listContainer, int position) {
@@ -168,6 +136,13 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
         }
         if (citiesListView.getChildCount() == 1)
             animatorSet.end();
+    }
+
+    //animation methods
+    private void initAnimatorSet() {
+        animatorSet = new AnimatorSet();
+        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
+        animatorSet.setDuration(getDuration());
     }
 
     private void expand(final CitiesListView.ListItemView viewHolder, int position) {
@@ -185,9 +160,9 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
                 super.onAnimationStart(animation);
                 citiesListView.setScrollEnable(false);
                 if (preSelectViewHolder != null) {
-                    preSelectViewHolder.onAnimationRepeat(false,0);
+                    preSelectViewHolder.onAnimationRepeat(false, 0);
                 }
-                viewHolder.onAnimationRepeat(true,0);
+                viewHolder.onAnimationRepeat(true, 0);
             }
 
             @Override
@@ -195,18 +170,18 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
                 super.onAnimationEnd(animation);
                 viewHolder.onOuterItemExpansion(true);
                 if (preSelectViewHolder != null) {
-                    preSelectViewHolder.onAnimationRepeat(false,1);
+                    preSelectViewHolder.onAnimationRepeat(false, 1);
                 }
-                viewHolder.onAnimationRepeat(true,1);
+                viewHolder.onAnimationRepeat(true, 1);
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
                 super.onAnimationCancel(animation);
                 if (preSelectViewHolder != null) {
-                    preSelectViewHolder.onAnimationRepeat(false,2);
+                    preSelectViewHolder.onAnimationRepeat(false, 2);
                 }
-                viewHolder.onAnimationRepeat(true,2);
+                viewHolder.onAnimationRepeat(true, 2);
             }
         });
         animatorSet.start();
@@ -221,35 +196,23 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
                 super.onAnimationStart(animation);
                 viewHolder.onOuterItemExpansion(false);
                 citiesListView.setScrollEnable(true);
-                viewHolder.onAnimationRepeat( false,0);
+                viewHolder.onAnimationRepeat(false, 0);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 citiesListView.setSelectedIndex(-1);
-                viewHolder.onAnimationRepeat(false,1);
+                viewHolder.onAnimationRepeat(false, 1);
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
                 super.onAnimationCancel(animation);
-                viewHolder.onAnimationRepeat(false,2);
+                viewHolder.onAnimationRepeat(false, 2);
             }
         });
         animatorSet.start();
-    }
-
-    protected int getBottomItemCount(int collapseShowItemCount) {
-        return citiesListView.getOverlapGapsCollapse()
-                * (citiesListView.getNumBottomShow() - collapseShowItemCount - (citiesListView.getNumBottomShow() -
-                (citiesListView.getChildCount() - citiesListView.getSelectedIndex() > citiesListView.getNumBottomShow()
-                ? citiesListView.getNumBottomShow()
-                : citiesListView.getChildCount() - citiesListView.getSelectedIndex() - 1)));
-    }
-
-    public int getDuration() {
-        return 200;
     }
 
     private void itemExpansion(final CitiesListView.ListItemView listContainer) {
@@ -294,6 +257,36 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
                 animatorSet.play(oAnim);
             }
             childTop += lp.mHeaderHeight;
+        }
+    }
+
+    //Outer Item Class
+    public class OuterListContainer extends CitiesListView.ListItemView {
+        View listItemLayout;
+        View listItemData;
+
+        TextView listItemTitle;
+
+        public OuterListContainer(View view) {
+            super(view);
+            listItemLayout = view.findViewById(R.id.list_item_layout);
+            listItemData = view.findViewById(R.id.inner_list_item);
+            innerList = view.findViewById(R.id.cityList);
+            listItemTitle = (TextView) view.findViewById(R.id.list_item_title);
+        }
+
+        @Override
+        public void onOuterItemExpansion(boolean isExpand) {
+            listItemData.setVisibility(isExpand ? View.VISIBLE : View.GONE);
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        public void onBind(Integer data, int position) {
+            listItemLayout.getBackground().setColorFilter(ContextCompat.getColor(getContext(), (java.lang.Integer) data), PorterDuff.Mode.SRC_IN);
+            String title = OuterList.GetData()[position];
+            listItemTitle.setText(title);
+            SetUpInnerList(title);
+            refreshCircular(innerList);
         }
     }
 }

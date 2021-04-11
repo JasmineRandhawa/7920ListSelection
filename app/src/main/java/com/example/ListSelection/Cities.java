@@ -1,8 +1,11 @@
 package com.example.ListSelection;
 
+import android.content.Context;
+import android.widget.ArrayAdapter;
+
+/* cities list and related methods */
 public class Cities {
-    public static String[] GetListData()
-    {
+    public static String[] GetListData() {
         String[] cities = {"Abbotsford",
                 "Addington",
                 "Adelaide",
@@ -703,22 +706,29 @@ public class Cities {
     }
 
     public static String[] GetFilteredList(String title) {
-        String[] alphabets =  new String[100];
+        String[] alphabets = new String[100];
         String[] cities = Cities.GetListData();
         int count = 0;
-        for (int i = 0; i<cities.length;i++)
-        {
-            String firstChar = cities[i].charAt(0)+"";
+        for (int i = 0; i < cities.length; i++) {
+            String firstChar = cities[i].charAt(0) + "";
             if (firstChar.equals(title)) {
-                    alphabets[count] = cities[i];
-                    count++;
+                alphabets[count] = cities[i];
+                count++;
             }
         }
-        String[] finalList = new String[count-1];
-        for (int i = 0; i<count-1;i++)
-        {
+        String[] finalList = new String[count - 1];
+        for (int i = 0; i < count - 1; i++) {
             finalList[i] = alphabets[i];
         }
         return finalList;
+    }
+
+    public static ArrayAdapter<String> GetListAdaptor(Context context, String title) {
+        ArrayAdapter<String> citiesyAdaptor = new ArrayAdapter<>(context, R.layout.inner_list_item);
+        String[] cities = Cities.GetFilteredList(title);
+        for (int i = 0; i < cities.length - 1; i++) {
+            citiesyAdaptor.add(String.format(cities[i]));
+        }
+        return citiesyAdaptor;
     }
 }

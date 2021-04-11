@@ -3,32 +3,27 @@ package com.example.ListSelection;
 import java.util.Arrays;
 
 public class OuterList {
-    public static String[] GetData()
-    {
+    public static String[] GetData() {
         String[] alphabets = new String[26];
         String[] cities = Cities.GetListData();
         int count = 0;
-        for (int i = 0; i<cities.length;i++)
-        {
-            if(count==25)
-            {
+        for (int i = 0; i < cities.length; i++) {
+            if (count == 25) {
                 break;
             }
-            String firstChar = cities[i].charAt(0)+"";
+            String firstChar = cities[i].charAt(0) + "";
             if (alphabets.length > 0) {
                 if (!Arrays.asList(alphabets).contains(firstChar)) {
                     alphabets[count] = firstChar;
                     count++;
                 }
-            }
-            else
-            {
+            } else {
                 alphabets[count] = firstChar;
                 count++;
             }
         }
         return alphabets;
-   }
+    }
 
     public static Integer[] GetItemColors() {
 
@@ -62,7 +57,6 @@ public class OuterList {
         };
         return itemColors;
     }
-
 
 
 }
