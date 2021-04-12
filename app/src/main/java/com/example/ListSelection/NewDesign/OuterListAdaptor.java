@@ -1,4 +1,4 @@
-package com.example.ListSelection;
+package com.example.ListSelection.NewDesign;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -16,6 +16,8 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
+import com.example.ListSelection.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,15 +32,19 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
     InnerList innerList;
     String selectedCity = "";
     TextView selectedCityTextView;
+    boolean isFirstTimeTouched = true;
     private AnimatorSet animatorSet;
 
     //constructor
-    public OuterListAdaptor(Context ctx, CitiesListView dictionary, TextView view) {
+    public OuterListAdaptor(Context ctx, CitiesListView citiesListView, TextView view) {
         this.context = ctx;
         this.layoutInflater = LayoutInflater.from(context);
         this.outerListData = new ArrayList();
-        citiesListView = dictionary;
+        this. citiesListView = citiesListView;
         selectedCityTextView = view;
+        selectedCity="";
+        selectedCityTextView.setText("");
+        isFirstTimeTouched= true;
     }
 
     public CitiesListView.ListItemView onCreateView(ViewGroup parent, int viewType) {
@@ -108,8 +114,14 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
             listSelectedItem.setBackgroundResource(R.drawable.inner_list_selected_item_shape);
             listSelectedItem.setTextColor(context.getResources().getColor(R.color.Red));
             selectedCity = (String) listSelectedItem.getText();
-            if (selectedCityTextView != null)
-                selectedCityTextView.setText(selectedCity);
+            if(isFirstTimeTouched) {
+                selectedCityTextView.setText("");
+                isFirstTimeTouched= false;
+            }
+            else{
+                if (selectedCityTextView != null)
+                    selectedCityTextView.setText(selectedCity);
+            }
         }
     }
 
@@ -118,15 +130,14 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
         innerList.setX(-200);
         innerList.setY(+110);
         innerList.setInnerListAdapter(Cities.GetListAdaptor(context, title));
-        innerList.scrollFirstItemToCenter();
         innerList.setInnerListAlignment(InnerList.InnerListListener.ItemAllignment.Left);
         innerList.setInnerListListener((filteredCitiesList, firstItem, displayedItems, totalItems)
-                -> refreshCircular(filteredCitiesList));
-        innerList.scrollFirstItemToCenter();
-        innerList.scrollSelectedItemToCenter(0);
+                -> {refreshCircular(filteredCitiesList);});
     }
 
     public void itemClick(final CitiesListView.ListItemView listContainer, int position) {
+        selectedCityTextView.setText("");
+        selectedCity="";
         if (animatorSet != null && animatorSet.isRunning()) return;
         initAnimatorSet();
         if (citiesListView.getSelectedIndex() == position) {
@@ -286,7 +297,6 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
             String title = OuterList.GetData()[position];
             listItemTitle.setText(title);
             SetUpInnerList(title);
-            refreshCircular(innerList);
         }
     }
 }

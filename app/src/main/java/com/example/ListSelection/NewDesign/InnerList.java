@@ -1,4 +1,4 @@
-package com.example.ListSelection;
+package com.example.ListSelection.NewDesign;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -13,6 +13,8 @@ import android.widget.AbsListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.example.ListSelection.R;
 
 /* Inner List View  for filtered cities list*/
 public class InnerList extends ListView implements AbsListView.OnScrollListener {

@@ -1,4 +1,4 @@
-package com.example.ListSelection;
+package com.example.ListSelection.NewDesign;
 
 import android.content.Context;
 import android.database.Observable;
@@ -11,6 +11,7 @@ import android.view.ViewParent;
 import android.widget.OverScroller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class CitiesListView extends ViewGroup {
@@ -20,11 +21,14 @@ public class CitiesListView extends ViewGroup {
     private final ViewDataObserver mObserver = new ViewDataObserver();
     private final List<ListItemView> listItemViews;
     private final OverScroller mScroller;
+    private final int mOverlapGaps = 80;
+    private final int mNumBottomShow = 3;
+    boolean isFirstTimeTouched = true;
+    int noOfTaps = 0;
+    long startTimeInMillis = 0;
     private int mScrollY;
     private int mScrollX;
     private int mTotalLength;
-    private final int mOverlapGaps = 80;
-    private final int mNumBottomShow = 3;
     private OuterListAdaptor outerListAdaptor;
     private int selectedIndex = -1;
     private int mShowHeight;
@@ -48,6 +52,9 @@ public class CitiesListView extends ViewGroup {
         super(context, attrs, defStyleAttr);
         listItemViews = new ArrayList<>();
         mScroller = new OverScroller(getContext());
+        isFirstTimeTouched = true;
+        noOfTaps = 0;
+        startTimeInMillis = 0;
     }
 
     private static int clamp(int n, int my, int child) {
@@ -61,13 +68,13 @@ public class CitiesListView extends ViewGroup {
     }
 
     //get set methods
-    public int getOverlapGaps() {
-        return mOverlapGaps;
-    }
+    public int getOverlapGaps() {return mOverlapGaps;}
 
-    public int getNumBottomShow() {
-        return mNumBottomShow;
-    }
+    public int getNumBottomShow() {return mNumBottomShow;}
+
+    public long getStartTime() {return startTimeInMillis;}
+
+    public int getNoOfTaps() {return noOfTaps; }
 
     public int getOverlapGapsCollapse() {
         return mOverlapGaps;
@@ -332,6 +339,11 @@ public class CitiesListView extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if(isFirstTimeTouched) {
+            startTimeInMillis = Calendar.getInstance().getTimeInMillis();
+            isFirstTimeTouched =false;
+        }
+        noOfTaps++;
         final int action = ev.getAction();
         if ((action == MotionEvent.ACTION_MOVE) && (mIsBeingDragged)) {
             return true;
@@ -406,109 +418,6 @@ public class CitiesListView extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (!mIsBeingDragged) {
-            super.onTouchEvent(ev);
-        }
-        if (!mScrollEnable) {
-            return true;
-        }
-        if (mVelocityTracker == null) {
-            mVelocityTracker = VelocityTracker.obtain();
-        }
-
-        MotionEvent vtev = MotionEvent.obtain(ev);
-
-        final int actionMasked = ev.getActionMasked();
-        if (actionMasked == MotionEvent.ACTION_DOWN) {
-            mNestedYOffset = 0;
-        }
-        vtev.offsetLocation(0, mNestedYOffset);
-
-        switch (actionMasked) {
-            case MotionEvent.ACTION_DOWN: {
-                if (getChildCount() == 0)
-                    return false;
-                if ((mIsBeingDragged = !mScroller.isFinished())) {
-                    final ViewParent parent = getParent();
-                    if (parent != null) {
-                        parent.requestDisallowInterceptTouchEvent(true);
-                    }
-                }
-                if (!mScroller.isFinished()) {
-                    mScroller.abortAnimation();
-                }
-                mLastMotionY = (int) ev.getY();
-                activePointer = ev.getPointerId(0);
-                break;
-            }
-            case MotionEvent.ACTION_MOVE:
-                final int activePointerIndex = ev.findPointerIndex(activePointer);
-                if (activePointerIndex == -1)
-                    break;
-
-                final int y = (int) ev.getY(activePointerIndex);
-                int deltaY = mLastMotionY - y;
-                if (!mIsBeingDragged && Math.abs(deltaY) > 16) {
-                    final ViewParent parent = getParent();
-                    if (parent != null) {
-                        parent.requestDisallowInterceptTouchEvent(true);
-                    }
-                    mIsBeingDragged = true;
-                    if (deltaY > 0) {
-                        deltaY -= 16;
-                    } else {
-                        deltaY += 16;
-                    }
-                }
-                if (mIsBeingDragged) {
-                    mLastMotionY = y - mScrollOffset[1];
-                    scrollViewTo(0, deltaY + getViewScrollY());
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                if (mIsBeingDragged) {
-                    final VelocityTracker velocityTracker = mVelocityTracker;
-                    velocityTracker.computeCurrentVelocity(1000, 16000);
-                    int initialVelocity = (int) velocityTracker.getYVelocity(activePointer);
-                    if (getChildCount() > 0) {
-                        if ((Math.abs(initialVelocity) > 100)) {
-                            fling(-initialVelocity);
-                        } else {
-                            if (mScroller.springBack(getViewScrollX(), getViewScrollY(), 0, 0, 0,
-                                    getScrollRange())) {
-                                postInvalidate();
-                            }
-                        }
-                        activePointer = -1;
-                    }
-                }
-                endDrag();
-                break;
-            case MotionEvent.ACTION_CANCEL:
-                if (mIsBeingDragged && getChildCount() > 0) {
-                    if (mScroller.springBack(getViewScrollX(), getViewScrollY(), 0, 0, 0, getScrollRange())) {
-                        postInvalidate();
-                    }
-                    activePointer = -1;
-                }
-                endDrag();
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN: {
-                final int index = ev.getActionIndex();
-                mLastMotionY = (int) ev.getY(index);
-                activePointer = ev.getPointerId(index);
-                break;
-            }
-            case MotionEvent.ACTION_POINTER_UP:
-                onSecondaryPointerUp(ev);
-                mLastMotionY = (int) ev.getY(ev.findPointerIndex(activePointer));
-                break;
-        }
-
-        if (mVelocityTracker != null) {
-            mVelocityTracker.addMovement(vtev);
-        }
-        vtev.recycle();
         return true;
     }
 

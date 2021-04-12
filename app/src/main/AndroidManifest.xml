@@ -8,7 +8,15 @@
         android:roundIcon="@drawable/project_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.NewDesign">
-        <activity android:name="com.example.ListSelection.ListActivity">
+        <activity android:name="com.example.ListSelection.Main.InstructionsActivity"/>
+        <activity android:name="com.example.ListSelection.Main.ExportDataActivity"/>
+        <activity android:name="com.example.ListSelection.Trials.Trial1_New"/>
+        <activity android:name="com.example.ListSelection.Trials.Trial2_New"/>
+        <activity android:name="com.example.ListSelection.Trials.Trial3_New"/>
+        <activity android:name="com.example.ListSelection.Trials.Trial1_Old"/>
+        <activity android:name="com.example.ListSelection.Trials.Trial2_Old"/>
+        <activity android:name="com.example.ListSelection.Trials.Trial3_Old"/>
+        <activity android:name="com.example.ListSelection.Main.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

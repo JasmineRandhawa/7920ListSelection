@@ -1,4 +1,6 @@
-package com.example.ListSelection;
+package com.example.ListSelection.NewDesign;
+
+import com.example.ListSelection.R;
 
 import java.util.Arrays;
 
@@ -48,12 +50,6 @@ public class OuterList {
                 R.color.DarkKhaki,
                 R.color.DarkTurquoise,
                 R.color.DarkViolet,
-                R.color.OrangeRed,
-                R.color.DarkCyan,
-                R.color.DarkRed,
-                R.color.DeepPink,
-                R.color.DarkOliveGreen,
-                R.color.PaleVioletRed
         };
         return itemColors;
     }

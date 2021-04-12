@@ -1,7 +1,9 @@
-package com.example.ListSelection;
+package com.example.ListSelection.NewDesign;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
+
+import com.example.ListSelection.R;
 
 /* cities list and related methods */
 public class Cities {
@@ -313,11 +315,6 @@ public class Cities {
                 "Humbermouth",
                 "Humboldt",
                 "Huntsville",
-                "Igloolik",
-                "Ignace",
-                "Ingersoll",
-                "Irricana",
-                "Jasper",
                 "Kaleden",
                 "Kamloops",
                 "Kamsack",
@@ -518,9 +515,6 @@ public class Cities {
                 "Princeton",
                 "Provost",
                 "Puslinch",
-                "Queens",
-                "Queensbury",
-                "QuinteWest",
                 "Rama",
                 "Ramara",
                 "Raymond",
@@ -646,10 +640,6 @@ public class Cities {
                 "Truro",
                 "Tweed",
                 "Twillingate",
-                "Ucluelet",
-                "Unity",
-                "Upham",
-                "Uxbridge",
                 "Valemount",
                 "Valleyview",
                 "Vancouver",
@@ -695,12 +685,6 @@ public class Cities {
                 "Woodstock",
                 "Woolwich",
                 "Wynyard",
-                "Yarmouth",
-                "Yellowhead",
-                "Yellowknife",
-                "Yorkton",
-                "Youbou",
-                "Zorra"
         };
         return cities;
     }
@@ -716,16 +700,31 @@ public class Cities {
                 count++;
             }
         }
-        String[] finalList = new String[count - 1];
-        for (int i = 0; i < count - 1; i++) {
-            finalList[i] = alphabets[i];
-        }
+        if (count > 0) {
+            String[] finalList = new String[count - 1];
+            for (int i = 0; i < count - 1; i++) {
+                finalList[i] = alphabets[i];
+            }
         return finalList;
+        }
+        return null;
     }
 
     public static ArrayAdapter<String> GetListAdaptor(Context context, String title) {
         ArrayAdapter<String> citiesyAdaptor = new ArrayAdapter<>(context, R.layout.inner_list_item);
         String[] cities = Cities.GetFilteredList(title);
+        if (cities != null) {
+            for (int i = 0; i < cities.length - 1; i++) {
+                citiesyAdaptor.add(String.format(cities[i]));
+            }
+            return citiesyAdaptor;
+        }
+        return null;
+    }
+
+    public static ArrayAdapter<String> GetFullListAdaptor(Context context) {
+        ArrayAdapter<String> citiesyAdaptor = new ArrayAdapter<>(context, R.layout.inner_list_item);
+        String[] cities = GetListData();
         for (int i = 0; i < cities.length - 1; i++) {
             citiesyAdaptor.add(String.format(cities[i]));
         }
