@@ -45,7 +45,7 @@ public class Trial1_New extends AppCompatActivity {
     //trial specific variables
     final static int trialNumber = 1; // trial number
     final static int partNumber = 2; // part number
-    final static boolean isFirstTrialActivity = true; //is its first trial activity to launch
+    final static boolean isFirstTrialActivity = false; //is its first trial activity to launch
     final static boolean isLastTrialActivity = false; // is it last trial activity
     final static String trialType = "SmallNew"; // trial type
     final static String listEra = "Small";
