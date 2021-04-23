@@ -76,6 +76,9 @@ public class CitiesListView extends ViewGroup {
 
     public int getNoOfTaps() {return noOfTaps; }
 
+    public void setNoOfTaps(int nt) { noOfTaps = nt; }
+
+
     public int getOverlapGapsCollapse() {
         return mOverlapGaps;
     }
@@ -343,7 +346,7 @@ public class CitiesListView extends ViewGroup {
             startTimeInMillis = Calendar.getInstance().getTimeInMillis();
             isFirstTimeTouched =false;
         }
-        noOfTaps++;
+
         final int action = ev.getAction();
         if ((action == MotionEvent.ACTION_MOVE) && (mIsBeingDragged)) {
             return true;
@@ -396,6 +399,7 @@ public class CitiesListView extends ViewGroup {
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
+                noOfTaps++;
                 mIsBeingDragged = false;
                 activePointer = -1;
                 if (mVelocityTracker != null) {

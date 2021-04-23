@@ -143,7 +143,7 @@ public class Trial1_New extends AppCompatActivity {
             } else if (listOptionToSelect.equals(listOptionSelectedByUser)) {
                 endTimeInMillis = Calendar.getInstance().getTimeInMillis();
                 startTimeInMillis = citiesListView.getStartTime();
-                noOfTaps = citiesListView.getNoOfTaps();
+                noOfTaps = citiesListView.getNoOfTaps() + outerListAdaptor.getNoOfTaps();
                 timeTaken = endTimeInMillis - startTimeInMillis;
                 SaveData(true);
                 selectedItemTextView.setText("");
@@ -300,12 +300,15 @@ public class Trial1_New extends AppCompatActivity {
     private void StartNextTrialAttempt(Boolean isFailure) {
         timeTaken = 0;
         noOfTaps = 0;
+        citiesListView.setNoOfTaps(0);
+        outerListAdaptor.setNoOfTaps(0);
         listOptionSelectedByUser = "";
+        BindlistPicker();
         if (!isFailure) {
             errorCount = 0;
             GenerateRandomlist();
         }
-        BindlistPicker();
+
     }
 
     // initializes the variables to be computed later.
@@ -321,6 +324,8 @@ public class Trial1_New extends AppCompatActivity {
         totalAttemptsMadeByUser = 0;
         noOfTaps = 0;
         BindlistPicker();
+        citiesListView.setNoOfTaps(0);
+        outerListAdaptor.setNoOfTaps(0);
     }
 
     //generate random lists

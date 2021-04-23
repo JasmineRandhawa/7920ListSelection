@@ -151,9 +151,6 @@ public class InnerList extends ListView implements AbsListView.OnScrollListener 
         if (totalItems == firstItem + itemDisplayed)
             this.setSelectionFromTop(firstItem - innerListAdapter.getItemCount(), this.getChildAt(0).getTop());
 
-        if (innerListListener != null)
-            innerListListener.onScrollEnd(this, firstItem, itemDisplayed, totalItems);
-
         if (innerListAlignment != InnerList.InnerListListener.ItemAllignment.Center) {
             double vRad = (innerList.getHeight() + innerListItemHeight) / 2;
             double hRad = (innerList.getHeight() < innerList.getWidth()) ? innerList.getHeight() : innerList.getWidth();
@@ -184,6 +181,8 @@ public class InnerList extends ListView implements AbsListView.OnScrollListener 
                 }
             }
         }
+        if (innerListListener != null)
+            innerListListener.onScrollEnd(this, firstItem, itemDisplayed, totalItems);
     }
 
     //listerner

@@ -107,13 +107,13 @@
                 android:layout_height="600dp"
                 android:layout_marginLeft="20dp"
                 android:background="@android:color/holo_orange_light">
-
                 <com.example.ListSelection.NewDesign.CitiesListView
                     android:id="@+id/cities_list"
                     android:layout_width="210dp"
                     android:layout_height="800dp"
                     android:background="@color/LightSlateGray" />
             </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout

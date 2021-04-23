@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 public class Common {
 
     // control number of successful attempts needed for a trial
-    private static final int TotalSuccessfulAttemptsNeededPerTrial = 2;
+    private static final int TotalSuccessfulAttemptsNeededPerTrial = 10;
 
     public static int getTotalSuccessfulAttemptsNeededPerTrial() {
         return TotalSuccessfulAttemptsNeededPerTrial;
@@ -14,26 +14,59 @@ public class Common {
 
     // called to randomly generate date from previous two decades
     public static String GenerateRandomMiddleTopListOption(String currentListOption) {
-        //int r = (int) (Common.RandInt());
-        // String name = new String[]{"13","24","12","34", "43", "21", "42","31"}[r];
-        // return name;
-        return "Alfred";
+        String[] list = new String[]{"Emo", "Delta", "Dalmeny", "Dutton",
+                "Elton", "Cardston", "Carstairs", "Calmar",
+                "Erin", "Esa"};
+        if (currentListOption.equals("")) {
+            return list[0];
+        } else {
+            int index = 0;
+            for (int i = 0; i <= list.length - 1; i++) {
+                if (list[i].equals(currentListOption)) {
+                    index = i;
+                    break;
+                }
+            }
+            return list[index + 1];
+        }
     }
 
     // called to randomly generate date from previous four decades
     public static String GenerateRandomMiddleListOption(String currentListOption) {
-        //int r = (int) (Common.RandInt());
-        // String name = new String[]{"13","24","12","34", "43", "21", "42","31"}[r];
-        // return name;
-        return "Alfred";
+        String[] list = new String[]{"Lamont", "Gordon", "Kerrobert", "Lakeview",
+                "Kent", "Lappe", "Gimli", "Kenora",
+                "Grey", "Greenstone"};
+        if (currentListOption.equals("")) {
+            return list[0];
+        } else {
+            int index = 0;
+            for (int i = 0; i <= list.length - 1; i++) {
+                if (list[i].equals(currentListOption)) {
+                    index = i;
+                    break;
+                }
+            }
+            return list[index + 1];
+        }
     }
 
     // called to randomly generate date from previous six decades
     public static String GenerateRandomMiddleDownListOption(String currentListOption) {
-        //int r = (int) (Common.RandInt());
-        // String name = new String[]{"13","24","12","34", "43", "21", "42","31"}[r];
-        // return name;
-        return "Alfred";
+        String[] list = new String[]{"Peel", "Redwater", "Pinehouse", "Oakview",
+                "RedDeer", "Outlook", "Riverdale", "Perth",
+                "Oliver", "Raymond"};
+        if (currentListOption.equals("")) {
+            return list[0];
+        } else {
+            int index = 0;
+            for (int i = 0; i <= list.length - 1; i++) {
+                if (list[i].equals(currentListOption)) {
+                    index = i;
+                    break;
+                }
+            }
+            return list[index + 1];
+        }
     }
 
     //round up float values to specific number of decimal places

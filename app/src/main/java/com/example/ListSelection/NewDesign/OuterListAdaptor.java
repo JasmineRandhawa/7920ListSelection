@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -30,6 +31,7 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
     private final CitiesListView citiesListView;
     private final int mDuration = 400;
     InnerList innerList;
+    int noOfTaps = 0 ;
     String selectedCity = "";
     TextView selectedCityTextView;
     boolean isFirstTimeTouched = true;
@@ -127,13 +129,23 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void SetUpInnerList(String title) {
+        noOfTaps = 0;
         innerList.setX(-200);
         innerList.setY(+110);
         innerList.setInnerListAdapter(Cities.GetListAdaptor(context, title));
         innerList.setInnerListAlignment(InnerList.InnerListListener.ItemAllignment.Left);
+        innerList.setOnTouchListener((v, event) -> {
+            if(event.getAction() == MotionEvent.ACTION_UP)
+                noOfTaps++;
+            return false;
+        });
         innerList.setInnerListListener((filteredCitiesList, firstItem, displayedItems, totalItems)
                 -> {refreshCircular(filteredCitiesList);});
     }
+    public int getNoOfTaps() {return noOfTaps; }
+
+    public void setNoOfTaps(int nt) { noOfTaps = nt; }
+
 
     public void itemClick(final CitiesListView.ListItemView listContainer, int position) {
         selectedCityTextView.setText("");

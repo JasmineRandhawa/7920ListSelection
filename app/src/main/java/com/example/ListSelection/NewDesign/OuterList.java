@@ -45,11 +45,7 @@ public class OuterList {
                 R.color.CadetBlue,
                 R.color.SeaGreen,
                 R.color.RosyBrown,
-                R.color.DarkGreen,
-                R.color.DarkSalmon,
-                R.color.DarkKhaki,
-                R.color.DarkTurquoise,
-                R.color.DarkViolet,
+                R.color.DarkGreen
         };
         return itemColors;
     }

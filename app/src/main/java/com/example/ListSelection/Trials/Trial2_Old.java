@@ -9,6 +9,7 @@ import android.os.CountDownTimer;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -32,6 +33,7 @@ import com.example.ListSelection.R;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 /*
 .List Selection Old Design
 */
@@ -115,6 +117,7 @@ public class Trial2_Old extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void BindlistPicker() {
+        AtomicBoolean isListClicked = new AtomicBoolean(false);
         selectedItemTextView.setText("");
         ListView citiesList = findViewById(R.id.cities_list);
         ArrayAdapter<String> citiesListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Cities.GetListData());
@@ -124,8 +127,12 @@ public class Trial2_Old extends AppCompatActivity {
             selectedItemTextView.setText(listOptionSelectedByUser);
         });
         citiesList.setOnTouchListener((v, event) -> {
-            startTimeInMillis = Calendar.getInstance().getTimeInMillis();
-            noOfTaps++;
+            if(!isListClicked.get()) {
+                startTimeInMillis = Calendar.getInstance().getTimeInMillis();
+                isListClicked.set(true);
+            }
+            if(event.getAction() == MotionEvent.ACTION_UP)
+                noOfTaps++;
             return false;
         });
         Button okButton = findViewById(R.id.ok_button);
