@@ -57,16 +57,6 @@ public class ExportDataActivity extends AppCompatActivity {
         sendEmail("jasminerandhawa05@gmail.com");
     }
 
-    public void redirectToHomeScreen(View v) {
-        csvData = "";
-        data = new Data();
-        trials = new ArrayList<>();
-        listAttempts = new ArrayList<>();
-        finish();
-        Intent intent = new Intent(this, InstructionsActivity.class);
-        startActivity(intent);
-    }
-
     // convert data to string
     private String GenerateStringData(List<Trial> trials) {
         Collections.sort(trials);
