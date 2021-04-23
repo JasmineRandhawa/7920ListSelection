@@ -16,7 +16,7 @@ public class Common {
     public static String GenerateRandomMiddleTopListOption(String currentListOption) {
         String[] list = new String[]{"Emo", "Delta", "Dalmeny", "Dutton",
                 "Elton", "Cardston", "Carstairs", "Calmar",
-                "Erin", "Esa"};
+                "Erin", "Essa"};
         if (currentListOption.equals("")) {
             return list[0];
         } else {
