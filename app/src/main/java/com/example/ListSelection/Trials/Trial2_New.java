@@ -22,14 +22,12 @@ import androidx.core.content.ContextCompat;
 
 import com.example.ListSelection.Main.Common;
 import com.example.ListSelection.Main.Data;
-import com.example.ListSelection.Main.ExportDataActivity;
 import com.example.ListSelection.Main.Trial;
 import com.example.ListSelection.Main.TrialAttempt;
 import com.example.ListSelection.NewDesign.CitiesListView;
 import com.example.ListSelection.NewDesign.OuterList;
 import com.example.ListSelection.NewDesign.OuterListAdaptor;
 import com.example.ListSelection.R;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +43,7 @@ public class Trial2_New extends AppCompatActivity {
     //trial specific variables
     final static int trialNumber = 2; // trial number
     final static int partNumber = 2; // part number
-    final static boolean isFirstTrialActivity = false; //is its first trial activity to launch
+    static boolean isFirstTrialActivity = false; //is its first trial activity to launch
     final static boolean isLastTrialActivity = false; // is it last trial activity
     final static String trialType = "MediumNew"; // trial type
     final static String listEra = "Medium";
@@ -93,7 +91,7 @@ public class Trial2_New extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(layout);
 
-        nextScreenIntent = new Intent(this, Trial3_Old.class);
+        nextScreenIntent = new Intent(this, com.example.ListSelection.Trials.Trial3_Old.class);
         TextView textViewTrialNumber = findViewById(R.id.textViewTrialNumber);
         textViewTrialNumber.setText("Trial " + trialNumber + " : Part " + partNumber);
         TextView textViewTrialName = findViewById(R.id.textViewTrialName);
@@ -317,6 +315,7 @@ public class Trial2_New extends AppCompatActivity {
     // initializes the variables to be computed later.
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void InitializeVariables() {
+        isFirstTrialActivity = false;
         timeTaken = 0;
         GenerateRandomlist();
         listOptionSelectedByUser = "";

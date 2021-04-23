@@ -44,8 +44,8 @@ public class Trial3_New extends AppCompatActivity {
     //trial specific variables
     final static int trialNumber = 3; // trial number
     final static int partNumber = 2; // part number
-    final static boolean isFirstTrialActivity = false; //is its first trial activity to launch
-    final static boolean isLastTrialActivity = true; // is it last trial activity
+    static boolean isFirstTrialActivity = false; //is its first trial activity to launch
+    static boolean isLastTrialActivity = true; // is it last trial activity
     final static String trialType = "LargeNew"; // trial type
     final static String listEra = "Large";
     final static String designType = "New Design"; // is it old design or new design
@@ -316,6 +316,8 @@ public class Trial3_New extends AppCompatActivity {
     // initializes the variables to be computed later.
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void InitializeVariables() {
+        isFirstTrialActivity = false;
+        isLastTrialActivity = true;
         timeTaken = 0;
         GenerateRandomlist();
         listOptionSelectedByUser = "";

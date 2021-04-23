@@ -44,7 +44,7 @@ public class Trial1_Old extends AppCompatActivity {
     //trial specific variables
     final static int trialNumber = 1; // trial number
     final static int partNumber = 1; // part number
-    final static boolean isFirstTrialActivity = true; //is its first trial activity to launch
+    static boolean isFirstTrialActivity = true; //is its first trial activity to launch
     final static boolean isLastTrialActivity = false; // is it last trial activity
     final static String trialType = "SmallOld"; // trial type
     final static String listEra = "Small";
@@ -66,7 +66,7 @@ public class Trial1_Old extends AppCompatActivity {
     static List<TrialAttempt> listAttempts;
     static String listOptionToSelect = ""; // randomly generated list option to select
     //computed variables
-    final Context context = Trial1_Old.this;  //context of current screen
+    final Context context = com.example.ListSelection.Trials.Trial1_Old.this;  //context of current screen
     Intent nextScreenIntent;  //intent of next screen when trial ends
     String listOptionSelectedByUser = ""; // list option selected by user
     long startTimeInMillis; // start Time is time in millisec when user taps list picker
@@ -90,7 +90,7 @@ public class Trial1_Old extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(layout);
 
-        nextScreenIntent = new Intent(this, Trial1_New.class);
+        nextScreenIntent = new Intent(this, com.example.ListSelection.Trials.Trial1_New.class);
         TextView textViewTrialNumber = findViewById(R.id.textViewTrialNumber);
         textViewTrialNumber.setText("Trial " + trialNumber + " : Part " + partNumber);
         TextView textViewTrialName = findViewById(R.id.textViewTrialName);
@@ -318,6 +318,7 @@ public class Trial1_Old extends AppCompatActivity {
     // initializes the variables to be computed later.
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void InitializeVariables() {
+        isFirstTrialActivity = true;
         timeTaken = 0;
         GenerateRandomlist();
         BindlistPicker();

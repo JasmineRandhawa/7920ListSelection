@@ -44,7 +44,7 @@ public class Trial3_Old extends AppCompatActivity {
     //trial specific variables
     final static int trialNumber = 3; // trial number
     final static int partNumber = 1; // part number
-    final static boolean isFirstTrialActivity = false; //is its first trial activity to launch
+    static boolean isFirstTrialActivity = false; //is its first trial activity to launch
     final static boolean isLastTrialActivity = false; // is it last trial activity
     final static String trialType = "LargeOld"; // trial type
     final static String listEra = "Large";
@@ -66,7 +66,7 @@ public class Trial3_Old extends AppCompatActivity {
     static List<TrialAttempt> listAttempts;
     static String listOptionToSelect = ""; // randomly generated list option to select
     //computed variables
-    final Context context = Trial3_Old.this;  //context of current screen
+    final Context context = com.example.ListSelection.Trials.Trial3_Old.this;  //context of current screen
     Intent nextScreenIntent;  //intent of next screen when trial ends
     String listOptionSelectedByUser = ""; // list option selected by user
     long startTimeInMillis; // start Time is time in millisec when user taps list picker
@@ -96,6 +96,9 @@ public class Trial3_Old extends AppCompatActivity {
         TextView textViewTrialName = findViewById(R.id.textViewTrialName);
         textViewTrialName.setText(trialTask + " : " + designType);
         selectedItemTextView = findViewById(R.id.selectedItemTextView);
+
+        //initialize variable to be computed later.
+        InitializeVariables();
 
         //initialize data
         if (isFirstTrialActivity) {
@@ -314,6 +317,7 @@ public class Trial3_Old extends AppCompatActivity {
     // initializes the variables to be computed later.
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void InitializeVariables() {
+        isFirstTrialActivity = false;
         timeTaken = 0;
         GenerateRandomlist();
         BindlistPicker();
