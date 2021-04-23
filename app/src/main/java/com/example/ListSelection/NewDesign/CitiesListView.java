@@ -74,6 +74,10 @@ public class CitiesListView extends ViewGroup {
 
     public long getStartTime() {return startTimeInMillis;}
 
+    public void setStartTime(long st) { startTimeInMillis = st ;}
+
+    public void setIsFirstTime(boolean isFirstTime) { isFirstTimeTouched = isFirstTime;}
+
     public int getNoOfTaps() {return noOfTaps; }
 
     public void setNoOfTaps(int nt) { noOfTaps = nt; }

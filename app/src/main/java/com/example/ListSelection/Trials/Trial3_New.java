@@ -66,7 +66,7 @@ public class Trial3_New extends AppCompatActivity {
     static List<TrialAttempt> listAttempts;
     static String listOptionToSelect = ""; // randomly generated list option to select
     //computed variables
-    final Context context = Trial3_New.this;  //context of current screen
+    final Context context = com.example.ListSelection.Trials.Trial3_New.this;  //context of current screen
     Intent nextScreenIntent;  //intent of next screen when trial ends
     String listOptionSelectedByUser = ""; // list option selected by user
     long startTimeInMillis; // start Time is time in millisec when user taps list picker
@@ -301,15 +301,16 @@ public class Trial3_New extends AppCompatActivity {
     private void StartNextTrialAttempt(Boolean isFailure) {
         timeTaken = 0;
         noOfTaps = 0;
-        citiesListView.setNoOfTaps(0);
-        outerListAdaptor.setNoOfTaps(0);
         listOptionSelectedByUser = "";
         BindlistPicker();
+        citiesListView.setNoOfTaps(0);
+        outerListAdaptor.setNoOfTaps(0);
         if (!isFailure) {
             errorCount = 0;
             GenerateRandomlist();
         }
-
+        citiesListView.setIsFirstTime(true);
+        citiesListView.setStartTime(0);
     }
 
     // initializes the variables to be computed later.
@@ -327,6 +328,8 @@ public class Trial3_New extends AppCompatActivity {
         BindlistPicker();
         citiesListView.setNoOfTaps(0);
         outerListAdaptor.setNoOfTaps(0);
+        citiesListView.setIsFirstTime(true);
+        citiesListView.setStartTime(0);
     }
 
     //generate random lists
