@@ -25,7 +25,7 @@ public class InnerList extends ListView implements AbsListView.OnScrollListener 
     private InnerListListener innerListListener;
     private InnerListAdapter innerListAdapter;
     private boolean isInfiniteScrollingEnabled = true;
-    private InnerList.InnerListListener.ItemAllignment innerListAlignment = InnerList.InnerListListener.ItemAllignment.Left;
+    private InnerListListener.ItemAllignment innerListAlignment = InnerListListener.ItemAllignment.Left;
 
     //constructor
     public InnerList(Context context) {
@@ -73,7 +73,7 @@ public class InnerList extends ListView implements AbsListView.OnScrollListener 
         this.innerListListener = listViewListener;
     }
 
-    public void setInnerListAlignment(InnerList.InnerListListener.ItemAllignment listAlignment) {
+    public void setInnerListAlignment(InnerListListener.ItemAllignment listAlignment) {
         if (innerListAlignment != listAlignment) {
             innerListAlignment = listAlignment;
             requestLayout();
@@ -151,7 +151,7 @@ public class InnerList extends ListView implements AbsListView.OnScrollListener 
         if (totalItems == firstItem + itemDisplayed)
             this.setSelectionFromTop(firstItem - innerListAdapter.getItemCount(), this.getChildAt(0).getTop());
 
-        if (innerListAlignment != InnerList.InnerListListener.ItemAllignment.Center) {
+        if (innerListAlignment != InnerListListener.ItemAllignment.Center) {
             double vRad = (innerList.getHeight() + innerListItemHeight) / 2;
             double hRad = (innerList.getHeight() < innerList.getWidth()) ? innerList.getHeight() : innerList.getWidth();
 

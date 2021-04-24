@@ -34,7 +34,7 @@ public class Common {
     // called to randomly generate date from previous four decades
     public static String GenerateRandomMiddleListOption(String currentListOption) {
         String[] list = new String[]{"Lamont", "Gordon", "Kerrobert", "Lakeview",
-                "Kent", "Lappe", "Gimli", "Kenora",
+                    "Kent", "Lappe", "Gimli", "Kenora",
                 "Grey", "Greenstone"};
         if (currentListOption.equals("")) {
             return list[0];

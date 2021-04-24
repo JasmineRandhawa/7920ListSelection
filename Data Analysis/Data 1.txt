@@ -1,0 +1,71 @@
+Trialno TrialType AttemptNo NoOfTaps Time Error
+1 SmallOld 1 17 7143 0
+1 SmallOld 2 20 9209 0
+1 SmallOld 3 16 7952 0
+1 SmallOld 4 13 6009 0
+1 SmallOld 5 20 10961 0
+1 SmallOld 6 9 4538 0
+1 SmallOld 7 14 6821 0
+1 SmallOld 8 17 7651 0
+1 SmallOld 9 20 10195 0
+1 SmallOld 10 7 5042 0
+
+
+1 SmallNew 1 2 4277 0
+1 SmallNew 2 1 2668 0
+1 SmallNew 3 1 2940 0
+1 SmallNew 4 7 10317 0
+1 SmallNew 5 2 3806 0
+1 SmallNew 6 5 6803 0
+1 SmallNew 7 5 6213 0
+1 SmallNew 8 8 9171 0
+1 SmallNew 9 4 4643 0
+1 SmallNew 10 2 3183 0
+
+
+2 MediumOld 1 18 10190 0
+2 MediumOld 2 18 10335 0
+2 MediumOld 3 17 10369 0
+2 MediumOld 4 19 12096 0
+2 MediumOld 5 12 6022 0
+2 MediumOld 6 20 10501 0
+2 MediumOld 7 14 6966 0
+2 MediumOld 8 23 13106 0
+2 MediumOld 9 26 13554 0
+2 MediumOld 10 15 10488 0
+
+
+2 MediumNew 1 2 4340 0
+2 MediumNew 2 4 5357 0
+2 MediumNew 3 3 3960 0
+2 MediumNew 4 1 2589 0
+2 MediumNew 5 5 5342 0
+2 MediumNew 6 4 4792 0
+2 MediumNew 7 7 9706 0
+2 MediumNew 8 6 17866 0
+2 MediumNew 9 5 6693 0
+2 MediumNew 10 5 6063 0
+
+
+3 LargeOld 1 16 7974 0
+3 LargeOld 2 21 11080 0
+3 LargeOld 3 17 11367 0
+3 LargeOld 4 22 13236 0
+3 LargeOld 5 17 12579 0
+3 LargeOld 6 20 10475 0
+3 LargeOld 7 16 9538 0
+3 LargeOld 8 18 11495 0
+3 LargeOld 9 29 15266 0
+3 LargeOld 10 13 6992 0
+
+
+3 LargeNew 1 1 2705 0
+3 LargeNew 2 1 3262 0
+3 LargeNew 3 4 6379 0
+3 LargeNew 4 1 4367 0
+3 LargeNew 5 0 1477 0
+3 LargeNew 6 3 5901 0
+3 LargeNew 7 4 6194 0
+3 LargeNew 8 6 7607 0
+3 LargeNew 9 1 2955 0
+3 LargeNew 10 1 2875 0

@@ -24,6 +24,7 @@ import com.example.ListSelection.Main.Common;
 import com.example.ListSelection.Main.Data;
 import com.example.ListSelection.Main.Trial;
 import com.example.ListSelection.Main.TrialAttempt;
+import com.example.ListSelection.NewDesign.Cities;
 import com.example.ListSelection.NewDesign.CitiesListView;
 import com.example.ListSelection.NewDesign.OuterList;
 import com.example.ListSelection.NewDesign.OuterListAdaptor;
@@ -45,11 +46,11 @@ public class Trial1_New extends AppCompatActivity {
     final static int partNumber = 2; // part number
     static boolean isFirstTrialActivity = false; //is its first trial activity to launch
     final static boolean isLastTrialActivity = false; // is it last trial activity
-    final static String trialType = "SmallNew"; // trial type
+    final static String designType = "New"; // trial type
     final static String listEra = "Small";
-    final static String designType = "New Design"; // is it old design or new design
+    final static String designTypeStr = "New Design"; // is it old design or new design
     final static String trialTask = " - List Selection"; // trial task description
-    final static String popupMessage = "You are about to use " + designType + " for " + trialTask + ".";
+    final static String popupMessage = "You are about to use " + designTypeStr + " for " + trialTask + ".";
     final static String instructionsPopUpTitle = "Instructions - Trial "; // trial instructions popup title
     final static String trialCompletePopUpTitle = "Success"; // trial success popup titile
     final static String trialCompletionPopupMessage = "You have successfully completed the Trial " + trialNumber +
@@ -65,7 +66,7 @@ public class Trial1_New extends AppCompatActivity {
     static List<TrialAttempt> listAttempts;
     static String listOptionToSelect = ""; // randomly generated list option to select
     //computed variables
-    final Context context = com.example.ListSelection.Trials.Trial1_New.this;  //context of current screen
+    final Context context = Trial1_New.this;  //context of current screen
     Intent nextScreenIntent;  //intent of next screen when trial ends
     String listOptionSelectedByUser = ""; // list option selected by user
     long startTimeInMillis; // start Time is time in millisec when user taps list picker
@@ -143,7 +144,7 @@ public class Trial1_New extends AppCompatActivity {
             } else if (listOptionToSelect.equals(listOptionSelectedByUser)) {
                 endTimeInMillis = Calendar.getInstance().getTimeInMillis();
                 startTimeInMillis = citiesListView.getStartTime();
-                noOfTaps = citiesListView.getNoOfTaps() + outerListAdaptor.getNoOfTaps();
+                noOfTaps = citiesListView.getNoOfTaps() + outerListAdaptor.getNoOfTaps() +1;
                 timeTaken = endTimeInMillis - startTimeInMillis;
                 SaveData(true);
                 selectedItemTextView.setText("");
@@ -176,7 +177,8 @@ public class Trial1_New extends AppCompatActivity {
 
             //successful attempt not equal to total attempts
             if (successAttempts < totalAttempts) {
-                listAttempts.add(new TrialAttempt(successAttempts, timeTaken, noOfTaps, errorCount));
+                listAttempts.add(new TrialAttempt(successAttempts, Cities.GetListOptionPos(listOptionToSelect),
+                        timeTaken, noOfTaps, errorCount));
                 StartNextTrialAttempt(false);
                 LayoutInflater l = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                 View successPopUpView = layoutInflater.inflate(R.layout.activity_success, null);
@@ -191,9 +193,10 @@ public class Trial1_New extends AppCompatActivity {
 
                 builder.setPositiveButton(popUButtonText, (dialog, which) -> {
                     // save data in list
-                    listAttempts.add(new TrialAttempt(successAttempts, timeTaken, noOfTaps, errorCount));
+                    listAttempts.add(new TrialAttempt(successAttempts, Cities.GetListOptionPos(listOptionToSelect),
+                            timeTaken, noOfTaps, errorCount));
                     if (!isFirstTrialActivity) {
-                        Trial trial = new Trial(trialNumber, trialType, new ArrayList<>(),
+                        Trial trial = new Trial(trialNumber, designType, new ArrayList<>(),
                                 totalAttemptsMadeByUser, successAttempts, failedAttempts);
                         trial.setTrialAttempts(listAttempts);
                         trials.add(trial);
@@ -202,7 +205,7 @@ public class Trial1_New extends AppCompatActivity {
                         trials = new ArrayList<>();
                     } else {
                         List<Trial> trials = new ArrayList<>();
-                        Trial trial = new Trial(trialNumber, trialType, new ArrayList<>(),
+                        Trial trial = new Trial(trialNumber, designType, new ArrayList<>(),
                                 totalAttemptsMadeByUser, successAttempts, failedAttempts);
                         trial.setTrialAttempts(listAttempts);
                         trials.add(trial);

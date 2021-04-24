@@ -6,12 +6,14 @@ public class TrialAttempt implements Serializable {
 
     private final long TimeInMillis;
     private final int AttemptNo;
+    private final int Pos;
     private final int NoOfTaps;
     private final int ErrorCount;
 
     //constructor for TrialAttempt class
-    public TrialAttempt(int attemptNo, long timeInMillis, int noOfTaps, int errorCount) {
+    public TrialAttempt(int attemptNo, int pos, long timeInMillis, int noOfTaps, int errorCount) {
         this.TimeInMillis = timeInMillis;
+        this.Pos = pos;
         this.NoOfTaps = noOfTaps;
         this.ErrorCount = errorCount;
         this.AttemptNo = attemptNo;
@@ -30,5 +32,7 @@ public class TrialAttempt implements Serializable {
         return ErrorCount;
     }
 
-
+    public int getPos() {
+        return Pos;
+    }
 }
