@@ -143,7 +143,7 @@ public class Trial2_New extends AppCompatActivity {
             } else if (listOptionToSelect.equals(listOptionSelectedByUser)) {
                 endTimeInMillis = Calendar.getInstance().getTimeInMillis();
                 startTimeInMillis = citiesListView.getStartTime();
-                noOfTaps = citiesListView.getNoOfTaps() + outerListAdaptor.getNoOfTaps() +1;
+                noOfTaps = citiesListView.getNoOfTaps() + outerListAdaptor.getNoOfTaps() ;
                 timeTaken = endTimeInMillis - startTimeInMillis;
                 SaveData(true);
                 selectedItemTextView.setText("");
