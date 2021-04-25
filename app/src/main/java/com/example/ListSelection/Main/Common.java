@@ -75,5 +75,4 @@ public class Common {
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
         return bd.floatValue();
     }
-
 }

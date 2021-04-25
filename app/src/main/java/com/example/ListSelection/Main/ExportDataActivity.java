@@ -62,7 +62,7 @@ public class ExportDataActivity extends AppCompatActivity {
                 String attempNumber = (index + 1) + "";
                 csvData = csvData + trial.getTrialNumber() + "\t"
                         + trial.getTrialType() + "\t"
-                        + (listAttempts.get(index).getPos() +3)+ "\t\t\t"
+                        + (listAttempts.get(index).getPos() +3) + "\t\t\t"
                         + attempNumber + "\t"
                         + listAttempts.get(index).getNoOfTaps() + "\t"
                         + listAttempts.get(index).getTimeInMillis() + "\t"
@@ -89,7 +89,7 @@ public class ExportDataActivity extends AppCompatActivity {
                     attempNumber = attempNumber + " ";
                 txtViewData = txtViewData + trial.getTrialNumber() + "\t\t\t\t\t\t\t\t\t"
                         + trial.getTrialType() + "\t\t\t"
-                        + (listAttempts.get(index).getPos() +3)+ "\t\t\t"
+                        + (listAttempts.get(index).getPos()+3 ) + "\t\t\t"
                         + attempNumber + "\t\t\t\t\t\t\t\t\t"
                         + listAttempts.get(index).getNoOfTaps() + "\t\t\t\t\t\t\t\t"
                         + listAttempts.get(index).getTimeInMillis() + "\t\t\t\t\t\t"

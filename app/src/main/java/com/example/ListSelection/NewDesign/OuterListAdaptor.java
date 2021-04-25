@@ -148,8 +148,8 @@ public class OuterListAdaptor<Integer> extends CitiesListView.Adapter<CitiesList
 
 
     public void itemClick(final CitiesListView.ListItemView listContainer, int position) {
-        selectedCityTextView.setText("");
         noOfTaps++;
+        selectedCityTextView.setText("");
         selectedCity="";
         if (animatorSet != null && animatorSet.isRunning()) return;
         initAnimatorSet();
